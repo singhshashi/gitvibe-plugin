@@ -1,0 +1,27 @@
+README.md
+  s_a167aeb1eacabb::t_7cd6db4040b45e 24-27
+.claude-plugin/plugin.json
+  s_a167aeb1eacabb::t_e876f7e8b555e6 4
+skills/gitvibe/SKILL.md
+  s_a167aeb1eacabb::t_d84a19250214b6 10-11,13,18-20
+  s_a167aeb1eacabb::t_716ed1bd62b584 29
+  s_a167aeb1eacabb::t_624eb955088b96 12,14-17
+commands/fix-issue.md
+  s_a167aeb1eacabb::t_ed942364859bfe 7-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "19f80b982194f3cba15c02cef514225cea87e194",
+  "prompts": {},
+  "sessions": {
+    "s_a167aeb1eacabb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f90d8a5e-a904-4f11-a074-93d339e3d735",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Shashi Singh <singh.shashishekhar@gmail.com>"
+    }
+  }
+}
