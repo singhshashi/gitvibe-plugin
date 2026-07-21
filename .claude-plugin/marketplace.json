@@ -1,0 +1,14 @@
+{
+  "name": "gitvibe",
+  "owner": {
+    "name": "Shashi Singh",
+    "email": "singh.shashishekhar@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "gitvibe",
+      "source": ".",
+      "description": "git-vibe local issue tracking workflows: investigate, plan, and fix local issues tracked in `git vibe`."
+    }
+  ]
+}
