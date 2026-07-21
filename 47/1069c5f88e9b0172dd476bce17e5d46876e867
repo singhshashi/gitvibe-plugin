@@ -1,0 +1,19 @@
+.gitignore
+  s_a167aeb1eacabb::t_883111c0170097 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "471069c5f88e9b0172dd476bce17e5d46876e867",
+  "prompts": {},
+  "sessions": {
+    "s_a167aeb1eacabb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f90d8a5e-a904-4f11-a074-93d339e3d735",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Shashi Singh <singh.shashishekhar@gmail.com>"
+    }
+  }
+}
