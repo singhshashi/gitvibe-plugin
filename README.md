@@ -21,6 +21,10 @@ This repository is both the plugin and its marketplace.
 - `/gitvibe:fix-issue 47` — investigate and fix local issue #47
 - Or trigger the skill by natural language: "fix local issue 47"
 
+### Requirements
+
+The plugin is installed globally but git-vibe is per-repo, so both commands start with a preflight check. If the `git vibe` CLI isn't installed, or the current repo hasn't been initialised with `git vibe init`, the workflow reports that and stops — it won't initialise your repo for you or fall back to another issue tracker.
+
 ## Update
 
 After changes are pushed to this repo:
