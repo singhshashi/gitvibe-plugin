@@ -1,0 +1,22 @@
+skills/gitvibe/templates/fix-plan.md
+  s_ccccf84b66d16c::t_7fc5bc1d3bffca 3-13,20-28,32-58,60-61,70-83
+  s_ccccf84b66d16c::t_2257556d06fd40 84
+.claude-plugin/plugin.json
+  s_ccccf84b66d16c::t_69cc38891e2139 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "206eda788901174659302bbadf6706fc11c45f84",
+  "prompts": {},
+  "sessions": {
+    "s_ccccf84b66d16c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c2d2299b-de94-4327-9379-cd4dc254e90d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Shashi Singh <singh.shashishekhar@gmail.com>"
+    }
+  }
+}
