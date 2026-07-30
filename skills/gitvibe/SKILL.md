@@ -30,9 +30,10 @@ To investigate and fix a tracked local issue #N:
 1. Run `git vibe show N` to get the issue details.
 2. Investigate the relevant code and produce a plan. The plan **MUST** follow `templates/fix-plan.md` — read that file first and match its sections exactly, omitting sections only where the template permits.
 3. Once the plan is accepted, write it (in the template's format) as a comment on the issue with `git vibe comment N --kind plan`.
-4. Create an appropriately named git branch.
+4. Create an appropriately named git branch, and note the branch you created it from — the merge request in step 7 targets that branch, not the repo's trunk.
 5. Implement the changes, verify the implementation where possible, then ask for manual review and verification.
-6. Once the implementation is complete, write an **implementation summary** on the issue with `git vibe comment N --kind summary`. Focus it on how the final implementation differs from the accepted plan — deviations, additions, dropped steps, and why. If it matched the plan exactly, say so.
+6. Once the changes are ready for review — sanity checks such as syntax, linting, and tests pass — commit them on the branch. Once the implementation is complete, write an **implementation summary** on the issue with `git vibe comment N --kind summary`. Focus it on how the final implementation differs from the accepted plan — deviations, additions, dropped steps, and why. If it matched the plan exactly, say so.
+7. If asked to open a merge request, run `git vibe merge open --source <branch> --target <base from step 4> --issue N`. Do not take the target from the session's "Main branch" hint — that names the repo's trunk, which is often not the branch the work forked from. Confirm with `git merge-base` if the base wasn't recorded.
 
 Comments take a `--kind` (default `comment`): use `plan` for the accepted plan, `summary` for the implementation summary, and the default `comment` for anything else. Plans and summaries **cannot be edited later**, so get them right before writing — write them once the plan is accepted / the implementation is complete, not before.
 
