@@ -1,0 +1,19 @@
+skills/gitvibe/SKILL.md
+  s_e3c66a1f66026c::t_a82aedabc66470 33,35-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "86e54d5b8c33b9637f6454b7470296cc3612afe2",
+  "prompts": {},
+  "sessions": {
+    "s_e3c66a1f66026c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "023c8051-84f7-4c50-ab0d-53104ab2dfb2",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Shashi Singh <singh.shashishekhar@gmail.com>"
+    }
+  }
+}
