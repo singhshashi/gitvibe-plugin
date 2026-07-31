@@ -1,0 +1,21 @@
+.claude-plugin/plugin.json
+  s_e0ce06e27ee31a::t_00a14317f0740a 4
+skills/gitvibe/SKILL.md
+  s_e0ce06e27ee31a::t_ca17735cff5cf9 31-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "31cf863daa8c3bb38f45683407e69813de095592",
+  "prompts": {},
+  "sessions": {
+    "s_e0ce06e27ee31a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "22de0e82-23fe-4cc6-a674-255c71c78614",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Shashi Singh <singh.shashishekhar@gmail.com>"
+    }
+  }
+}
