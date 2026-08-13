@@ -1,0 +1,19 @@
+.claude-plugin/plugin.json
+  s_93f17fdb6f7f19::t_dae73245343adc 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "230cd6c483a04d9addc8165c90fb8a116ba59895",
+  "prompts": {},
+  "sessions": {
+    "s_93f17fdb6f7f19": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "16b7da87-8ae9-4757-8f31-85583e3fe6ac",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Shashi Singh <singh.shashishekhar@gmail.com>"
+    }
+  }
+}
