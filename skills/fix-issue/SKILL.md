@@ -1,11 +1,11 @@
 ---
-name: gitvibe
-description: Work with git-vibe local issue tracking — investigate, plan, and fix local issues tracked in `git vibe`. Use when asked to fix a local issue, plan a fix, or work through a git-vibe tracked issue. Plans follow the fix-plan template in this skill.
+name: fix-issue
+description: Investigate, plan, and fix a local issue tracked in `git vibe`. Use when asked to fix a local issue, plan a fix, or work through a git-vibe tracked issue. Plans follow the fix-plan template in this skill.
 ---
 
-# gitvibe
+# fix-issue
 
-Workflows for the git-vibe local issue tracker. Issues are tracked in a local database and inspected with the `git vibe` CLI (e.g. `git vibe show <n>`).
+Fix a tracked issue in the git-vibe local issue tracker. Issues are tracked in a local database and inspected with the `git vibe` CLI (e.g. `git vibe show <n>`).
 
 ## Preflight — is git-vibe available here?
 
@@ -55,5 +55,3 @@ While a plan is in draft, it lives in a file, not in the conversation:
 If a plan file for the issue already exists when you start, read it first — it is an earlier draft for the same issue.
 
 Comments take a `--kind` (default `comment`): use `plan` for the accepted plan, `summary` for the implementation summary, and the default `comment` for anything else. Plans and summaries **cannot be edited later**, so get them right before writing — write them once the plan is accepted / the implementation is complete, not before.
-
-> The `/gitvibe:fix-issue` slash command is a thin wrapper around this workflow.

@@ -1,0 +1,6 @@
+# Codex / OpenAI UI metadata for this skill (co-located with SKILL.md so it
+# travels with the skill). The skill itself is defined in ../SKILL.md; this
+# file only carries harness-specific display metadata for the Codex skill picker.
+interface:
+  display_name: "Fix Issue"
+  short_description: "Investigate, plan, and fix a local git-vibe issue."

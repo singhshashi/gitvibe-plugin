@@ -1,13 +1,12 @@
-# gitvibe — Claude Code plugin
+# gitvibe — Claude Code & OpenAI Codex plugin
 
-A [Claude Code](https://claude.com/claude-code) plugin for the **git-vibe** local issue tracker. It bundles:
+A plugin for the **git-vibe** local issue tracker. It bundles a set of skills, each named for its task; the first is **`fix-issue`** — an investigate → plan → fix workflow with a required `fix-plan` template. Each skill carries its entire workflow, so every agent invokes the skill directly; there is no separate command wrapper.
 
-- the **`gitvibe`** skill — an investigate → plan → fix workflow, with a required `fix-plan` template
-- the **`/gitvibe:fix-issue`** command — a thin wrapper that runs that workflow for a given issue number
+This repository is both the plugin and its marketplace. **Both agents use the exact same skill implementation** — e.g. `skills/fix-issue/SKILL.md` and `skills/fix-issue/templates/fix-plan.md`. There is no duplicated copy for Codex: there is **one** marketplace manifest (`.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json`), and both Claude Code and Codex install from it. Harness-specific metadata lives next to each skill in `skills/<skill>/agents/` so it travels with the skill, which is how more agents will be added.
 
-This repository is both the plugin and its marketplace.
+## Claude Code
 
-## Install
+### Install
 
 ```
 /plugin marketplace add singhshashi/gitvibe-plugin
@@ -16,16 +15,14 @@ This repository is both the plugin and its marketplace.
 
 `gitvibe@gitvibe` = the plugin named `gitvibe` from the marketplace named `gitvibe`.
 
-## Usage
+### Usage
 
-- `/gitvibe:fix-issue 47` — investigate and fix local issue #47
-- Or trigger the skill by natural language: "fix local issue 47"
+Invoke the skill either way:
 
-### Requirements
+- **By name:** `/gitvibe:fix-issue 47` — `<plugin>:<skill>`; the text after it (`47`) is your request.
+- **By natural language:** `fix local issue 47` — the skill's `description` triggers it automatically.
 
-The plugin is installed globally but git-vibe is per-repo, so both commands start with a preflight check. If the `git vibe` CLI isn't installed, or the current repo hasn't been initialised with `git vibe init`, the workflow reports that and stops — it won't initialise your repo for you or fall back to another issue tracker.
-
-## Update
+### Update
 
 After changes are pushed to this repo:
 
@@ -33,17 +30,58 @@ After changes are pushed to this repo:
 /plugin marketplace update gitvibe
 ```
 
+## OpenAI Codex
+
+Codex reads the **same** `.claude-plugin/` marketplace as Claude Code — it does not need its own marketplace manifest. (Verified with `codex` CLI 0.167.0: `codex plugin add` installs the plugin from `.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json`, pulling in `skills/`.)
+
+### Register the marketplace and install
+
+```bash
+codex plugin marketplace add singhshashi/gitvibe-plugin
+codex plugin add gitvibe@gitvibe
+```
+
+`gitvibe@gitvibe` = the plugin named `gitvibe` from the marketplace named `gitvibe`. The plugin updates itself when the `version` in `.claude-plugin/plugin.json` changes. Enablement can be toggled per trusted repo in `.codex/config.toml`:
+
+```toml
+[plugins."gitvibe@gitvibe"]
+enabled = true
+```
+
+Each skill's Codex UI metadata (display name, short description) comes from its `skills/<skill>/agents/openai.yaml`, co-located with the skill.
+
+### Explicit skill invocation
+
+Invoke a skill by name with the `$` prefix:
+
+```text
+$fix-issue Fix issue #47.
+```
+
+The skill name (`fix-issue`) comes from the `name:` field in `skills/fix-issue/SKILL.md`. Codex discovers skills automatically from the root `skills/` directory — no separate Codex copy exists.
+
+### Differences from Claude Code
+
+- **Explicit-invocation syntax.** Both agents run the same skill; only the way to force it by name differs — Claude Code uses `/gitvibe:fix-issue 47`, Codex uses `$fix-issue Fix issue #47.` Natural-language invocation ("fix local issue 47") is identical on both.
+- **Implicit invocation.** The official Codex docs describe no configuration field for disabling implicit (automatic) skill invocation, so none is set here — adding an undocumented field would not be honored. Codex decides when to consider a skill from its `description:`; the `$fix-issue` syntax forces explicit selection. If you need explicit-only behavior, use `$fix-issue` and avoid phrasing that would implicitly match the skill description.
+
+## Shared skill & prerequisites
+
+Regardless of agent, the plugin is installed globally while git-vibe is per-repo, so the workflow begins with a preflight check. If the `git vibe` CLI isn't installed, or the current repo hasn't been initialised with `git vibe init`, the workflow reports that and stops — it won't initialise your repo for you or fall back to another issue tracker.
+
 ## Layout
 
 ```
 .claude-plugin/
-  marketplace.json   # marketplace manifest (plugin source: ".")
-  plugin.json        # plugin manifest
-commands/
-  fix-issue.md       # /gitvibe:fix-issue
+  marketplace.json   # the ONE marketplace manifest — Claude Code AND Codex read it
+  plugin.json        # plugin manifest (name, version, description)
 skills/
-  gitvibe/
-    SKILL.md
+  fix-issue/           # one directory per skill; more will sit beside it
+    SKILL.md         # shared skill — used by ALL agents
+    agents/
+      openai.yaml    # Codex/OpenAI display metadata for this skill
     templates/
       fix-plan.md    # required plan structure
 ```
+
+Adding another agent means adding a `skills/<skill>/agents/<agent>.*` file beside each skill — not another root-level marketplace manifest. Adding another skill means a new `skills/<skill>/` directory.
