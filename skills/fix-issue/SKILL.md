@@ -1,6 +1,6 @@
 ---
 name: fix-issue
-description: Investigate, plan, and fix a local issue tracked in `git vibe`. Use when asked to fix a local issue, plan a fix, or work through a git-vibe tracked issue. Plans follow the fix-plan template in this skill.
+description: Investigate, plan, and fix a local issue tracked in `git vibe`. Use when asked to fix a local issue or work through a git-vibe tracked issue end to end, including implementing a plan drafted with the plan skill. For planning only, without implementing, use the plan skill instead. Plans follow the fix-plan template in this skill.
 ---
 
 # fix-issue

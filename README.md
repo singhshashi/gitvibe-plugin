@@ -1,6 +1,6 @@
 # gitvibe — Claude Code & OpenAI Codex plugin
 
-A plugin for the **git-vibe** local issue tracker. It bundles a set of skills, each named for its task; the first is **`fix-issue`** — an investigate → plan → fix workflow with a required `fix-plan` template. Each skill carries its entire workflow, so every agent invokes the skill directly; there is no separate command wrapper.
+A plugin for the **git-vibe** local issue tracker. It bundles a set of skills, each named for its task; **`fix-issue`** — an investigate → plan → fix workflow with a required `fix-plan` template — and **`plan`**, which only drafts and refines that plan in `.gitvibe/plans/<N>-plan.md` and never implements it. A plan written with `plan` is picked up as the draft when you later run `fix-issue` on the same issue. Each skill carries its entire workflow, so every agent invokes the skill directly; there is no separate command wrapper.
 
 This repository is both the plugin and its marketplace. **Both agents use the exact same skill implementation** — e.g. `skills/fix-issue/SKILL.md` and `skills/fix-issue/templates/fix-plan.md`. There is no duplicated copy for Codex: there is **one** marketplace manifest (`.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json`), and both Claude Code and Codex install from it. Harness-specific metadata lives next to each skill in `skills/<skill>/agents/` so it travels with the skill, which is how more agents will be added.
 
@@ -21,6 +21,7 @@ Invoke the skill either way:
 
 - **By name:** `/gitvibe:fix-issue 47` — `<plugin>:<skill>`; the text after it (`47`) is your request.
 - **By natural language:** `fix local issue 47` — the skill's `description` triggers it automatically.
+- **Plan only:** `/gitvibe:plan 47` (or `plan local issue 47`) — writes and refines `.gitvibe/plans/47-plan.md` without touching code. Run `/gitvibe:fix-issue 47` afterwards to implement it.
 
 ### Update
 
@@ -56,6 +57,7 @@ Invoke a skill by name with the `$` prefix:
 
 ```text
 $fix-issue Fix issue #47.
+$plan Plan issue #47.
 ```
 
 The skill name (`fix-issue`) comes from the `name:` field in `skills/fix-issue/SKILL.md`. Codex discovers skills automatically from the root `skills/` directory — no separate Codex copy exists.
@@ -78,12 +80,16 @@ Plans are written in **GitVibe Plan Compatibility v1** format — a single `gitv
   marketplace.json   # the ONE marketplace manifest — Claude Code AND Codex read it
   plugin.json        # plugin manifest (name, version, description)
 skills/
-  fix-issue/           # one directory per skill; more will sit beside it
+  fix-issue/         # one directory per skill
     SKILL.md         # shared skill — used by ALL agents
     agents/
       openai.yaml    # Codex/OpenAI display metadata for this skill
     templates/
-      fix-plan.md    # required plan structure
+      fix-plan.md    # required plan structure (also used by plan/)
+  plan/              # planning-only skill; writes .gitvibe/plans/<N>-plan.md
+    SKILL.md
+    agents/
+      openai.yaml
 ```
 
 Adding another agent means adding a `skills/<skill>/agents/<agent>.*` file beside each skill — not another root-level marketplace manifest. Adding another skill means a new `skills/<skill>/` directory.

@@ -1,7 +1,7 @@
 {
   "name": "gitvibe",
-  "description": "git-vibe local issue tracking workflows: investigate, plan, and fix local issues tracked in `git vibe`. Bundles the fix-issue skill (fix-plan template).",
-  "version": "0.9.0",
+  "description": "git-vibe local issue tracking workflows: investigate, plan, and fix local issues tracked in `git vibe`. Bundles the fix-issue skill (fix-plan template) and the planning-only plan skill.",
+  "version": "0.10.0",
   "author": {
     "name": "Shashi Singh",
     "email": "singh.shashishekhar@gmail.com"
