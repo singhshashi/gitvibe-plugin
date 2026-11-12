@@ -7,7 +7,7 @@ description: Draft or refine a fix plan for a local issue tracked in `git vibe`,
 
 Write and refine the plan for a tracked issue in the git-vibe local issue tracker. Issues are inspected with the `git vibe` CLI (e.g. `git vibe show <n>`).
 
-**This skill only plans.** Its sole output is the plan file `.gitvibe/plans/<N>-plan.md`. It never implements the plan: do not edit, create, or delete any other file, do not create branches, do not commit, and do not post comments to the issue. When the user is happy with the plan, they implement it with the `fix-issue` skill, which picks up the plan file as its draft.
+**This skill only plans.** Its sole output is the plan file `.gitvibe/plans/<N>-plan.md`. It never implements the plan: do not edit, create, or delete any other file, do not create branches, do not commit, and do not post comments to the issue. When the user is happy with the plan, they implement it with the `implement-plan` skill, which takes the plan file as the accepted plan (or with `fix-issue`, which picks it up as its draft).
 
 ## Preflight — is git-vibe available here?
 
@@ -51,14 +51,14 @@ The plan **MUST** follow `../fix-issue/templates/fix-plan.md` (the fix-issue ski
 5. Discuss the plan with the user. Apply every change from the discussion to the plan file immediately — the file is the single current version of the plan. Run `git vibe plan check` after every revision.
    - Keep item ids and target ids stable while they describe the same work. Give new targets fresh ids and never reuse the id of a dropped target.
    - **The base stays put.** If `HEAD` moves while the plan is in draft, keep the original `base_commit`. Only change it if the user asks to rebase the plan; then recheck every target against the new base at once — never mix coordinates from two commits.
-6. When the user is satisfied, run `git vibe plan check` one last time and stop. Tell the user the plan is at `.gitvibe/plans/N-plan.md` and that `fix-issue N` will take it from there. Do not start implementing, even if the user's acceptance sounds like a go-ahead — if they ask to implement, tell them to invoke the `fix-issue` skill.
+6. When the user is satisfied, run `git vibe plan check` one last time and stop. Tell the user the plan is at `.gitvibe/plans/N-plan.md` and that `implement-plan N` will implement it. Do not start implementing, even if the user's acceptance sounds like a go-ahead — if they ask to implement, tell them to invoke the `implement-plan` skill.
 
 ## The plan file
 
 - **Path** — `.gitvibe/plans/<N>-plan.md`, where `<N>` is the git-vibe issue number. Use this name exactly.
 - **Contents** — the full plan in the template format, and nothing else.
 - **Purpose** — other software reads this file to show the plan to the user. Keep it current: do not keep a different version of the plan only in the conversation.
-- **Lifetime** — this skill leaves the file in place. It is removed by `fix-issue` once that skill writes the accepted plan to the issue. Do not commit it, and do not post it with `git vibe comment`.
+- **Lifetime** — this skill leaves the file in place. It is removed by `implement-plan` (or `fix-issue`) once that skill writes the accepted plan to the issue. Do not commit it, and do not post it with `git vibe comment`.
 
 ## Refining an existing plan
 

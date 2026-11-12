@@ -8,7 +8,7 @@
     {
       "name": "gitvibe",
       "source": ".",
-      "description": "git-vibe local issue tracking workflows: investigate, plan, and fix local issues tracked in `git vibe`, or plan them without implementing.",
+      "description": "git-vibe local issue tracking workflows: investigate, plan, and fix local issues tracked in `git vibe`, or plan them and implement the plan as separate steps.",
       "category": "Productivity"
     }
   ]
