@@ -69,6 +69,8 @@ The skill name (`fix-issue`) comes from the `name:` field in `skills/fix-issue/S
 
 Regardless of agent, the plugin is installed globally while git-vibe is per-repo, so the workflow begins with a preflight check. If the `git vibe` CLI isn't installed, or the current repo hasn't been initialised with `git vibe init`, the workflow reports that and stops — it won't initialise your repo for you or fall back to another issue tracker.
 
+Plans are written in **GitVibe Plan Compatibility v1** format — a single `gitvibe-plan` JSON block that maps each P-item to files and base-commit line ranges — and validated with `git vibe plan check`. The installed git-vibe must include that command; the preflight stops with a message if it doesn't.
+
 ## Layout
 
 ```

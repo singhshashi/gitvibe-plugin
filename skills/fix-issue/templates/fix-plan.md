@@ -1,8 +1,5 @@
 # Plan: <title>
 
-**Base revision:** `<sha>` — every line number in this plan refers to the files at
-this commit. Get it with `git rev-parse --short HEAD` before writing section 4.
-
 > **Diagram convention (applies to every diagram below).** Draw the _delta_, not a
 > full picture. Show unchanged components only as context, and mark every changed
 > node with what happens to it and which P-item owns it:
@@ -60,50 +57,163 @@ sequenceDiagram
 ```
 
 ## 4. Planned Changes
-_One entry per change item (P1, P2, …). The P-ids are the join key — diagrams,
-edge-case rows, verification tests, and change sites all reference them, so keep them
-stable. For each:_
+_One entry per change item (P1, P2, …), in the same order as the mapping block. The
+P-ids are the join key — diagrams, edge-case rows, verification tests, and the mapping
+block all reference them, so keep them stable. For each:_
 - **Purpose** — why this change is needed
-- **Changes** — what will be modified
+- **Changes** — what will be modified, in prose. Refer to targets by id (`P1.2`)
+  rather than repeating their paths and line numbers: the mapping block is the only
+  place those are written.
 - **Dependencies** — other P-items or work this depends on
-- **Change sites** — the table below
 
-### Change sites
+_Every P-item described here must appear in the mapping block with the same meaning,
+and every item in the block must be described here._
 
-Each P-item ends with a change-site table. This replaces a prose "code areas" list: it
-is the machine-readable map from a diff hunk back to the P-item that owns it, so a
-reader hovering over a hunk sees the right P-item even when one file carries changes
-from several P-items.
+### Mapping block
 
-| Site | File | Base lines | Op | Anchor | What changes |
-|------|------|-----------|-----|--------|--------------|
-| P1.1 | `src/cli/dispatch.rs` | 120–134 | modify | `fn dispatch()` | route `plan` subcommand to the new repository |
-| P1.2 | `src/cli/dispatch.rs` | after 88 | insert | `use` block | import `PlanDocumentRepository` |
-| P1.3 | `src/repo/plan_document.rs` | — | add file | — | new repository type |
-| P1.4 | `src/repo/mod.rs` | 12–17 | delete | `struct LegacyPlan` | drop the superseded type |
+_End this section with **exactly one** fenced block labelled `gitvibe-plan` holding
+JSON in GitVibe Plan Compatibility v1 format. It is the single authoritative source
+for which files and lines each P-item changes — GitVibe uses it to attribute every
+hunk of the review diff to a P-item. Do not repeat its paths, operations, or
+coordinates in a separate table anywhere in the plan._
 
-Rules:
+_The block below is an **illustration** of the format. Its commit, paths, and
+coordinates are made up; a real plan uses the target repository's data and
+contains only its own block. It shows multiple targets per item (P1, P2), insertion
+points (P1.2, P2.2), a binary edit (P2.3), and a rename (P3.1) whose content edits
+belong to another item (P4.1)._
 
-- **One row per contiguous hunk**, not one row per file. If a P-item touches three
-  separate places in one file, that is three rows. Never merge distant edits into one
-  wide range — that is what makes a file resolve to the wrong P-item.
-- **Site ids** are `<P-id>.<n>` (`P1.1`, `P1.2`, …) and are globally unique in the plan.
-- **Base lines** are line numbers in the file **at the base revision**, never predicted
-  post-change numbers:
-  - `modify` / `delete` — the inclusive range being replaced or removed, e.g. `120–134`.
-    A single line is just `41`.
-  - `insert` — `after <line>` (or `before <line>`), the base line the new code attaches to.
-  - `add file` / `rename` — `—`, there is no base range.
-- **Op** is one of `modify`, `insert`, `delete`, `add file`, `rename`.
-- **Anchor** is the enclosing symbol (function, struct, class, config key) or a short
-  quoted line. It is the fallback when the file drifts and the line numbers no longer
-  match — keep it specific enough to find with a search.
-- **No two sites may overlap.** If two P-items both need to touch the same lines, either
-  split the range so each side owns disjoint lines, or merge the work into one P-item.
-  Overlap makes the hunk → P-item mapping ambiguous.
-- Verify every range before writing it — read the file at those exact lines. A guessed
-  range is worse than no range, because the diff will silently attribute a hunk to the
-  wrong P-item.
+```gitvibe-plan
+{
+  "version": 1,
+  "base_commit": "0123456789abcdef0123456789abcdef01234567",
+  "items": [
+    {
+      "id": "P1",
+      "description": "Add a repository for plan documents and drop the legacy plan type",
+      "targets": [
+        {
+          "id": "P1.1",
+          "path": "src/repo/plan_document.rs",
+          "operation": "add",
+          "scope": {"kind": "file"}
+        },
+        {
+          "id": "P1.2",
+          "path": "src/repo/mod.rs",
+          "operation": "modify",
+          "scope": {"kind": "point", "after": 3},
+          "anchor": "module declarations"
+        },
+        {
+          "id": "P1.3",
+          "path": "src/repo/legacy_plan.rs",
+          "operation": "delete",
+          "scope": {"kind": "file"}
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "description": "Route the plan subcommand to the new repository",
+      "targets": [
+        {
+          "id": "P2.1",
+          "path": "src/cli/dispatch.rs",
+          "operation": "modify",
+          "scope": {"kind": "lines", "start": 120, "end": 134},
+          "anchor": "fn dispatch()"
+        },
+        {
+          "id": "P2.2",
+          "path": "src/cli/dispatch.rs",
+          "operation": "modify",
+          "scope": {"kind": "point", "after": 8},
+          "anchor": "use block"
+        },
+        {
+          "id": "P2.3",
+          "path": "docs/images/cli-help.png",
+          "operation": "modify_binary",
+          "scope": {"kind": "file"}
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "description": "Rename the plan command module to match the subcommand name",
+      "targets": [
+        {
+          "id": "P3.1",
+          "path": "src/cli/plan_cmd.rs",
+          "new_path": "src/cli/plan.rs",
+          "operation": "rename",
+          "scope": {"kind": "file"}
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "description": "Make the plan command print the stored plan instead of a placeholder",
+      "targets": [
+        {
+          "id": "P4.1",
+          "path": "src/cli/plan_cmd.rs",
+          "operation": "modify",
+          "scope": {"kind": "lines", "start": 15, "end": 42},
+          "anchor": "fn run()"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Block rules
+
+- **`version`** — exactly the integer `1`.
+- **`base_commit`** — the full 40- or 64-hex commit ID from `git rev-parse HEAD`,
+  run in the **target repository** when planning starts. Never abbreviate it. Every
+  path and coordinate in the block refers to the files at this commit, and the base
+  stays fixed once the plan is accepted.
+- **Items** — `items` is a non-empty array in display order. Each item has an `id`
+  matching `P1`, `P2`, … (no leading zeros; gaps allowed), a non-blank
+  `description`, and at least one target.
+- **Target ids** — every target has an `id` of the form `<item id>.<n>` (`P2.1`),
+  unique in the plan. Ids are identity, not position: keep a target's id while it
+  describes the same work, give new targets fresh numbers, and never reuse the id of
+  a dropped target.
+- **Paths** — exact, case-sensitive, repository-relative, separated by `/`. No
+  leading or trailing `/`, no empty, `.`, or `..` components, no glob characters
+  (`*`, `?`, `[`, `]`), and no basename shortcuts for nested files. Spaces and
+  Unicode are fine.
+- **Operation and scope** — one of:
+
+  | `operation` | `scope` | Meaning |
+  |---|---|---|
+  | `modify` | `{"kind": "lines", "start": S, "end": E}` | Replace or delete base lines `S`–`E` (1-based, inclusive, `S ≤ E`). Deleting lines from a file that stays also uses this. |
+  | `modify` | `{"kind": "point", "after": A}` | Insert in the gap after base line `A`. `0` is before the first line; the file's line count is end of file. |
+  | `modify_binary` | `{"kind": "file"}` | Change the content of an existing binary file. |
+  | `add` | `{"kind": "file"}` | Create `path`; it must not exist at the base. |
+  | `delete` | `{"kind": "file"}` | Remove `path`; it must exist at the base. |
+  | `rename` | `{"kind": "file"}` | Move `path` to `new_path` (required, different, same path rules). |
+
+- **Renames own only the path.** Edits to a renamed file's content are separate
+  `modify` targets on the **original** `path`, with base coordinates — in the same
+  item or another one (as P3.1 / P4.1 above). The same holds for `modify_binary`.
+- **Text vs binary** — `modify` needs a text file and `modify_binary` a binary file,
+  as git's diff classifies them at the base.
+- **Line counting** — LF ends a line, CRLF counts as one ending, a final line without
+  a newline still counts, and an empty file has zero lines. `wc -l` misses that final
+  line; count with `git show <base_commit>:<path> | awk 'END { print NR }'`.
+- **Distinct scopes** — give each target lines no other target claims. Overlapping
+  targets in different items are allowed but make ownership of those lines
+  ambiguous, and `git vibe plan check` warns about them.
+- **`anchor`** — optional, non-empty: the enclosing symbol or a short quoted line,
+  as context for a human reader. It never replaces coordinates.
+- **Unknown fields** are allowed and ignored; object member names must be unique.
+
+`git vibe plan check <plan-file>` checks all of the above against the repository.
 
 ## 5. Data & Interface Changes
 _Schema, DB, API, or type/interface changes. Omit this section entirely when not applicable._
