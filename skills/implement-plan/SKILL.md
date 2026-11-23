@@ -27,6 +27,11 @@ Then run `git vibe plan check --help`:
 - **`error: unrecognized subcommand 'plan'`** (exit 2) — this git-vibe is too old to check plans. Tell the user to update git-vibe and stop.
 - **Exit 0** — continue.
 
+Then run `git vibe summary check --help`. Implementation summaries are drafted and checked with `git vibe summary` (see "The implementation summary"):
+
+- **`error: unrecognized subcommand 'summary'`** (exit 2) — this git-vibe is too old to draft summaries. Tell the user to update git-vibe and stop.
+- **Exit 0** — continue.
+
 In every failure case, stop and report. Do not fall back to GitHub issues, a TODO file, or any other tracker, and do not guess at issue content.
 
 ## Implementing issue #N
@@ -43,7 +48,7 @@ In every failure case, stop and report. Do not fall back to GitHub issues, a TOD
    - Never edit the accepted plan or its mapping block to make deviations disappear.
    - If you add temporary logging to debug the implementation, keep track of every line you add — step 7 removes them.
 7. Once the changes are ready, remove all temporary logging you added — only those lines; leave the user's own uncommitted edits alone. Logging you deliberately keep must be part of a P-item or reported as extra in the summary. Then run the sanity checks (syntax, linting, tests) and the verification steps from the plan's section 7. If any fail and you cannot fix them within the plan's scope, stop and report — do not open the merge request.
-8. Commit on the branch, then write an **implementation summary** on the issue with `git vibe comment N --kind summary` (see "The implementation summary").
+8. Commit on the branch, then draft, check and post an **implementation summary** with `git vibe summary draft` → `git vibe summary check` → `git vibe comment N --kind summary` (see "The implementation summary"). After any later commits on the branch (review fixes, for example), post an incremental summary the same way.
 9. Open the merge request without waiting to be asked: `git vibe merge open --source <branch> --target <base from step 5> --issue N`. Do not take the target from the session's "Main branch" hint — that names the repo's trunk, which is often not the branch the work forked from. Confirm with `git merge-base` if the base wasn't recorded. Then tell the user the merge request is open, list anything that still needs manual verification (for example GUI-only steps from the plan), and point out any **Not planned / Extra** work.
 
 ## Checking the plan
@@ -58,18 +63,25 @@ Never skip the check or validate the block by hand instead.
 
 ## The implementation summary
 
-The summary is a separate comment (`git vibe comment N --kind summary`) written once the implementation is committed. It describes how the result differs from the accepted plan — deviations, additions, dropped steps, and why. If the implementation matches the plan exactly, say so explicitly.
+The summary is a separate comment (`git vibe comment N --kind summary`), written once the implementation is committed. It explains how the result differs from the accepted plan, and why. Its `gitvibe-summary` block is the only record of which changes each explanation covers, and GitVibe links it to the review diff. Never write its coordinates by hand: they come from `git vibe summary draft`.
 
-Include a target reconciliation covering every target that was added, dropped, or changed:
+1. **Draft.** After the final commit, run `git vibe summary draft N > .gitvibe/summaries/N-summary.md` (create the directory if needed; the draft is for `HEAD`). stdout is exactly the document to post. Notes and warnings go to stderr: the latest summarised commits, changes no cover can explain, and plan warnings. Read them. If the draft exits 2, it printed a prose template with no block; tell the user the reason from stderr and continue with the prose.
+2. **Edit.** Only the meaning changes:
+   - Fill in every empty `reason`.
+   - Reclassify where it applies. An `extra` that extends an accepted target becomes `changed` with that target's id. New work for a P-item becomes `added` with a fresh id under that item: the next number after the highest one in the plan and in earlier summaries, and never a dropped id. Keep `extra` (`X` ids) for work that belongs to no P-item, such as formatter churn. Keep a `dropped` only if the target really was not implemented.
+   - You may merge adjacent covers that share a reason. Never invent covers for changes the draft did not list, and never change `plan_base_commit`, `implementation_commit` or any coordinates.
+   - Replace the prose placeholder with a readable summary. Explain in prose any change the notes say no cover can explain, such as a file mode change. If the block says `"matches_plan": true`, say explicitly that the implementation matches the plan.
+   - A reconciliation table, if you include one, is derived from the block: Target, Change, Reason. It has no locations; GitVibe derives them from the block.
+3. **Check.** Run `git vibe summary check .gitvibe/summaries/N-summary.md --issue N`, and act on its exit status:
+   - **0** — continue.
+   - **1** — the summary has mistakes its author can fix. Fix them and check again. Never post a summary that exits 1.
+   - **2** — the check could not complete. Continue, but tell the user why, and do not claim the summary was verified.
+4. **Post.** Run `git vibe comment N --kind summary -F .gitvibe/summaries/N-summary.md`, then delete the file. This step always happens, also on exit 2 or when there are plan warnings.
+5. **Report.** Report every remaining warning from the check to the user, with the reason you left each one. This matters most for `unexplained_change`, `undisclosed_drop` and the plan warnings.
 
-| Target | Change | Reason | Actual |
-|--------|--------|--------|--------|
-| P2.1 | changed | the fix also needed the error branch | `src/cli/dispatch.rs` lines 118–140 |
-| P2.4 | added | P2 needed a new test fixture | `tests/fixtures/plan.json` (add) |
-| P1.3 | dropped | the legacy type is still used by the importer | — |
+Do not change the implementation or the accepted plan to silence a diagnostic. The one exception is removing a change you really did not intend to make; commit that, then draft again.
 
-- **Target** — the accepted target's id, or a fresh id for a target the plan did not have (the next unused number in its item; never a dropped id).
-- **Actual** — path and lines, or the file operation, in the **implementation commit**: state its full ID (`git rev-parse HEAD` after the final commit) above the table. Lines here refer to that commit, not to the base.
+**Later commits** get an incremental summary. Review fixes, for example: after committing them, repeat these steps. The draft lists only what earlier summaries leave open, so the new summary records only the new deviations.
 
 The summary is a record only. It does not change the plan's mapping, and work the plan did not declare stays **Not planned / Extra** in GitVibe.
 
