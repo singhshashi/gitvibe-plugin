@@ -75,6 +75,8 @@ Regardless of agent, the plugin is installed globally while git-vibe is per-repo
 
 Plans are written in **GitVibe Plan Compatibility v1** format — a single `gitvibe-plan` JSON block that maps each P-item to files and base-commit line ranges — and validated with `git vibe plan check`. The installed git-vibe must include that command; the preflight stops with a message if it doesn't.
 
+Implementation summaries are written in **GitVibe Summary Compatibility v2** format: a full snapshot, drafted with `git vibe summary draft --log` from the implementation log the agent keeps in `.gitvibe/summaries/<N>-log.jsonl`, and validated with `git vibe summary check`. The preflight of `fix-issue` and `implement-plan` stops if the installed git-vibe lacks `summary draft --log`.
+
 ## Layout
 
 ```
